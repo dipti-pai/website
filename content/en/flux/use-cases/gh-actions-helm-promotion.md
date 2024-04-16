@@ -212,6 +212,9 @@ jobs:
           echo "set ociRepository digest to ${DIGEST}"
           # This will filter out all resources that do not have a digest field.
           yq eval '(select(.spec.ref.digest) | .spec.ref.digest) = env(DIGEST)' -i ./clusters/production/apps/demo.yaml
+          # add the chart version as a line comment
+          env lc="version ${{ steps.staging.outputs.version }}" \
+          yq eval '(select(.spec.ref.digest) | .spec.ref.digest) line_comment=env(lc)' -i ./clusters/production/apps/demo.yaml
       # Open a Pull Request if an upgraded is needed in production.
       - name: Open promotion PR
         uses: peter-evans/create-pull-request@v4
